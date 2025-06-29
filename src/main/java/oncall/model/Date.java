@@ -10,7 +10,6 @@ public class Date {
     private int date;
     private String day;
 
-
     public Date() {
     }
 
