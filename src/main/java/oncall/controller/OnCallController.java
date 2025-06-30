@@ -36,15 +36,14 @@ public class OnCallController {
         date.SaveStartMonthDay(); // 월 / 일 형식 유효성 검사 포함
     }
 
-    public void weekDayWorkerInputLogic() {
+    // todo input 로직을 weekday / hoiliday로 나누었으나 합쳐야 한다
+    public void workerInputLogic() {
         inputView.printWeekDayWorkerInput();
         saveWorkers(WorkType.WEEKDAY.getType());
-    }
-
-    public void HolidayWorkerInputLogic() {
         inputView.printHolidayWorkerInput();
         saveWorkers(WorkType.HOLIDAY.getType());
     }
+
 
     /*
     ----------------------------------- 저장 메소드 -----------------------------------
@@ -54,27 +53,31 @@ public class OnCallController {
         String input;
         String[] names;
 
-        do {
-            input = readLine(); // "," 구분자로 한번에 입력
-            // 중복 제거 해서 String[]에 저장
-            names = Arrays.stream(input.split(",")).map(String::trim).toArray(String[]::new);
-            // 1차 조건
-            if(!workerInputCheck(names)) {
-                throw new IllegalArgumentException(ErrorCode.INVALID_INPUT.getErrorMessage());
-            }
-        } while (! workerInputCheck(names));
+        try {
+            do {
+                input = readLine(); // "," 구분자로 한번에 입력
+                // 중복 제거 해서 String[]에 저장
+                names = Arrays.stream(input.split(",")).map(String::trim).toArray(String[]::new);
+                // 1차 조건
+                if(!workerInputCheck(names)) {
+                    throw new IllegalArgumentException(ErrorCode.INVALID_INPUT.getErrorMessage());
+                }
 
-        // workType별로 Worker의 flag에 나누어서 저장
-        if (workType == WorkType.WEEKDAY.getType()) {
-            saveWeekDayWorkers(names, workType);
+                // workType별로 Worker의 flag에 나누어서 저장
+                if (workType == WorkType.WEEKDAY.getType()) {
+                    saveWeekDayWorkers(names, workType);
+                }
+
+                if (workType == WorkType.HOLIDAY.getType()) {
+                    saveHoliDayWorkers(names, workType);
+                }
+
+            } while (! checkWorkDayFlag()); // todo 매번 weekDay만 검사하는게 아니다 -> 이 로직은 holiday를 저장할때만 해야 한다. (평일 저장시에는 1차체크만 / 휴일 저장시의 체크 구분)
+
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
         }
 
-        if (workType == WorkType.HOLIDAY.getType()) {
-            saveHoliDayWorkers(names, workType);
-        }
-
-        // todo flag가 다 켜졌는지 검사해야 -> 검증 X시 반복 (어떻게 다시 돌아가지)
-        // save시에
 
     }
 
@@ -138,9 +141,14 @@ public class OnCallController {
     }
 
     // 근무자 workDayFlag 체크 메소드
-    public Boolean checkWorkDayFlag(Worker worker) {
+    public Boolean checkWorkDayFlag() {
+        for (Worker worker : workers) {
+            if (! worker.checkWorkDayValid()) {
+                throw new IllegalArgumentException(ErrorCode.INVALID_INPUT.getErrorMessage());
+            }
+        }
 
-        return worker.checkWorkDayValid();
+        return true;
     }
 
 
