@@ -1,6 +1,7 @@
 package oncall.controller;
 
 
+import oncall.exception.ErrorCode;
 import oncall.model.Date;
 import oncall.model.WorkType;
 import oncall.model.Worker;
@@ -11,6 +12,8 @@ import oncall.view.OutPutView;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.NoSuchElementException;
+
 import static camp.nextstep.edu.missionutils.Console.readLine;
 
 public class OnCallController {
@@ -46,18 +49,57 @@ public class OnCallController {
     /*
     ----------------------------------- 저장 메소드 -----------------------------------
     */
-    // 근무자 저장 메소드
+    // 근무자 저장 메소드 (workType -> 평/휴일 구별)
     public void saveWorkers(int workType) {
         String input;
         String[] names;
 
         do {
             input = readLine(); // "," 구분자로 한번에 입력
+            // 중복 제거 해서 String[]에 저장
             names = Arrays.stream(input.split(",")).map(String::trim).toArray(String[]::new);
+            // 1차 조건
+            if(!workerInputCheck(names)) {
+                throw new IllegalArgumentException(ErrorCode.INVALID_INPUT.getErrorMessage());
+            }
         } while (! workerInputCheck(names));
 
-        // todo type별로 Worker의 flag에 나누어서 저장
-        // todo 추후에 flag가 다 켜졌는지 검사해야
+        // workType별로 Worker의 flag에 나누어서 저장
+        if (workType == WorkType.WEEKDAY.getType()) {
+            saveWeekDayWorkers(names, workType);
+        }
+
+        if (workType == WorkType.HOLIDAY.getType()) {
+            saveHoliDayWorkers(names, workType);
+        }
+
+        // todo flag가 다 켜졌는지 검사해야 -> 검증 X시 반복 (어떻게 다시 돌아가지)
+        // save시에
+
+    }
+
+    // 평일 근무자 저장
+    public void saveWeekDayWorkers(String[] names, int workType) {
+        int index = 0;
+
+        for (String name : names) {
+            workers.add(new Worker(name));
+            workers.get(index++).setWorkDayFlag(workType);
+        }
+    }
+
+    // 휴일 근무자 저장
+    public void saveHoliDayWorkers(String[] names, int workType) {
+        // 근무자 중에 name이 일치하는 거의 workType만 변경
+        for (String name : names) {
+            // 이름에 해당하는 근무자 찾기
+            Worker worker = workers.stream()
+                    .filter(one -> one.getName().equals(name))
+                    .findFirst().orElseThrow(NoSuchElementException::new);
+
+            // 휴일 근무 타입 설정
+            worker.setWorkDayFlag(workType);
+        }
     }
 
     /*
@@ -95,15 +137,24 @@ public class OnCallController {
         return Arrays.stream(names).distinct().count() == count;
     }
 
+    // 근무자 workDayFlag 체크 메소드
+    public Boolean checkWorkDayFlag(Worker worker) {
+
+        return worker.checkWorkDayValid();
+    }
+
+
     // 근무자 연속 배치 여부 메소드 (todo 평일 or 휴일 근무자 재배치 필요)
     public Boolean checkContinuousWorker(String[] names) {
 
         return true;
     }
 
+    // 평일/휴일 근무자 저장 유효성 검사 (평일 / 휴일에 각각 한번인지)
 
-    // 평일/휴일 근무자 저장 유효성 검사 (1. 평일 / 휴일에 각각 한번인지, 2. 연속됐는지)
-
+    /*
+    ----------------------------------- 근무자 재배치 메소드 -----------------------------------
+    */
     // 평일 근무자 재배치 메소드
 
     // 휴일 근무자 재배치 메소드
