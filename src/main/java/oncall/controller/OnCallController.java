@@ -33,7 +33,7 @@ public class OnCallController {
     */
     public void monthAndDayInputLogic() {
         inputView.printMonthAndDayInput();
-        date.SaveStartMonthDay(); // 월 / 일 형식 유효성 검사 포함 Todo 대문자 -> 소문자
+        date.saveStartMonthDay(); // 월 / 일 형식 유효성 검사 포함 T
     }
 
     // todo input 로직을 weekday / hoiliday로 나누었으나 합쳐야 한다
@@ -44,10 +44,17 @@ public class OnCallController {
         saveWorkers(WorkType.HOLIDAY.getType());
     }
 
+    // 월 / 요일 입력받고 parsing 메소드
+    // todo 입력받고 parsing은 컨트롤러가 -> 그 결과물을 model에 넘긴다
+    // model의 메소드에 param 넘기고 체크해서 false면 다시
+    public void saveStartMonthDay(WorkType type) {
+
+    }
 
     /*
     ----------------------------------- 저장 메소드 -----------------------------------
     */
+
     // 근무자 저장 메소드 (workType -> 평/휴일 구별)
     // todo 입력받고, 유효성 검사 <-> save 메소드를 나눠보자
     public void saveWorkers(int workType) {
@@ -58,7 +65,7 @@ public class OnCallController {
             do {
                 input = readLine(); // "," 구분자로 한번에 입력
                 // 중복 제거 해서 String[]에 저장
-                // todo stream과 람다는
+                // todo stream과 람다는 일단 구현 시도해보고 추후 gpt로 리팩토링 시도할 것 (람다는 경험이 중요)
                 names = Arrays.stream(input.split(",")).map(String::trim).toArray(String[]::new);
                 // 1차 조건
                 if(!workerInputCheck(names)) {
@@ -114,20 +121,25 @@ public class OnCallController {
     // 평일/휴일 공통 입력 유효성 체크 (이름의 길이 제한, 최소/최대 인원, 중복 인원)
     public Boolean workerInputCheck(String[] names) {
 
-        // todo return true를 하지말고 false로 하자
-        // todo names를 for문 이전에 (반복해서 할 필요 X)
+        if (! checkDuplicatedName(names)) {
+            return false;
+        }
+
+        if (! checkWorkersCount(names)) {
+            return false;
+        }
+
         for (String name : names) {
-            // todo if를 3개로 나누자 -> &&로 묶으면 어디서 오류인지 모르기에
-            if(checkWorkerNameLength(name) && checkWorkersCount(names) && checkDuplicatedName(names)) {
-                return true;
+            if(! checkWorkerNameLength(name)) {
+                return false;
             };
         }
 
-        return false;
+        return true;
     }
 
     // todo 클래스 기준으로 나누어서 접근제한자 수정 (private으로), validate 용도의 함수는 private로 한다
-    // todo 추후 한번에 람다로 리팩토링
+    // todo 추후 3개 함수 한번에 람다로 리팩토링
     // 이름 길이 제한
     public Boolean checkWorkerNameLength(String name) {
 
