@@ -20,6 +20,7 @@ public class Date {
     }
 
     // 월 / 요일 저장 메소드
+    // todo 입력받고 parsing은 컨트롤러가 -> 그 결과물을 model에 넘긴다
     public void SaveStartMonthDay() {
         do {
             input = readLine();
@@ -40,6 +41,7 @@ public class Date {
             //System.out.println("월 검사 통과 X");
 
         } catch (IllegalArgumentException e) {
+            // todo ErrorCde 클래스로 접근해서 출력하지 말고, View의 메소드를 사용해서 출력하도록
             System.out.println(ErrorCode.INVALID_INPUT.getErrorMessage());
         }
         return false;
@@ -47,7 +49,7 @@ public class Date {
 
     public boolean CheckValidDay(String day) {
         int dayCnt = Day.values().length;
-
+        // todo try catch 대신 return true/false 구분 (exception이 아님, exception으로 처리하고 싶으면 customException 클래스)
         try {
             for (int cnt = 0; cnt < dayCnt; cnt++) {
                 if(day.equals(Day.values()[cnt].getDay())) {

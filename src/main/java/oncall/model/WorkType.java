@@ -13,3 +13,5 @@ public enum WorkType {
         return type;
     }
 }
+
+// todo tostring -> ex. type 0 -> "평일" / type 1 -> "휴일"
