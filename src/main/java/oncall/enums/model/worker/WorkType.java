@@ -1,4 +1,4 @@
-package oncall.model;
+package oncall.enums.model.worker;
 
 public enum WorkType {
     WEEKDAY(0, "평일"), HOLIDAY(1, "휴일");

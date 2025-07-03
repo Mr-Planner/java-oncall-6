@@ -1,11 +1,11 @@
 package oncall.controller;
 
 
-import oncall.exception.ErrorCode;
+import oncall.enums.exception.ErrorCode;
 import oncall.model.Date;
-import oncall.model.WorkType;
+import oncall.enums.model.worker.WorkType;
 import oncall.model.Worker;
-import oncall.model.WorkerCount;
+import oncall.enums.model.worker.WorkerCount;
 import oncall.view.InputView;
 import oncall.view.OutputView;
 
@@ -20,8 +20,6 @@ public class OnCallController {
     // 필드
     private final Date date = new Date();
     private final List<Worker> workers = new ArrayList<>();
-    private final InputView inputView = new InputView();
-    private final OutputView outputView = new OutputView();
 
     // 프로그램 실행 흐름
     public void run() {
@@ -31,24 +29,30 @@ public class OnCallController {
     /*
     ----------------------------------- 입력 메소드 -----------------------------------
     */
+
+    // 월, 요일 입력 및 유효성 검사
+    // todo 메소드 분리 방법을 모르겠음
     public void monthAndDayInputLogic() {
-        inputView.printMonthAndDayInput();
-        date.saveStartMonthDay(); // 월 / 일 형식 유효성 검사 포함 T
+        String input;
+        int month;
+        String day;
+
+        do {
+            InputView.printMonthAndDayInput();
+
+            input = readLine();
+            month = Integer.parseInt(input.split(",")[0]);
+            day = input.split(",")[1].trim();
+        } while (! (date.checkValidMonth(month) && date.checkValidDay(day)));
+
     }
 
-    // todo input 로직을 weekday / hoiliday로 나누었으나 합쳐야 한다
+    // todo input 로직을 weekday / hoiliday로 나누었으나 합쳐야 한다 (고민중)
     public void workerInputLogic() {
-        inputView.printWeekDayWorkerInput();
+        InputView.printWeekDayWorkerInput();
         saveWorkers(WorkType.WEEKDAY.getType());
-        inputView.printHolidayWorkerInput();
+        InputView.printHolidayWorkerInput();
         saveWorkers(WorkType.HOLIDAY.getType());
-    }
-
-    // 월 / 요일 입력받고 parsing 메소드
-    // todo 입력받고 parsing은 컨트롤러가 -> 그 결과물을 model에 넘긴다
-    // model의 메소드에 param 넘기고 체크해서 false면 다시
-    public void saveStartMonthDay(WorkType type) {
-
     }
 
     /*
@@ -86,7 +90,6 @@ public class OnCallController {
         } catch (IllegalArgumentException e) {
             System.out.println(e.getMessage());
         }
-
 
     }
 

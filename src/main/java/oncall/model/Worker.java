@@ -1,5 +1,7 @@
 package oncall.model;
 
+import oncall.enums.model.worker.WorkType;
+
 public class Worker {
     private final String name;
     private final Boolean[] workDayFlag = new Boolean[2];

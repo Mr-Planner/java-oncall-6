@@ -1,4 +1,4 @@
-package oncall.model;
+package oncall.enums.model.worker;
 
 // 최소 / 최대 근무자 수
 public enum WorkerCount {
