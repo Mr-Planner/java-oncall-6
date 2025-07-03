@@ -32,6 +32,7 @@ public class OnCallController {
 
     // 월, 요일 입력 및 유효성 검사
     // todo 메소드 분리 방법을 모르겠음
+    // todo 자료형을 잘못 입력받는 것에 대한 예외처리 -> 해야 함
     public void monthAndDayInputLogic() {
         String input;
         int month;
