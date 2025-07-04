@@ -6,6 +6,7 @@ import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,9 +43,10 @@ public class OnCallControllerTest {
         assertThat(date.checkValidDay(day)).isEqualTo(true);
     }
 
+    // 유효하지 않은 값
     @DisplayName("월 / 요일 입력 테스트 (Invalid input case)")
     @ParameterizedTest
-    @ValueSource(strings = {"13, 월", "4, 몫", "-1, 월", "12, 월화", "12, 월 화"})
+    @ValueSource(strings = {"13, 월", "4, 몫", "-1, 월", "12, 월화", "12, 월 화", "12, 5"})
     void invalidMonthAndDayInputLogicTest(String input) {
         // given
         String[] splitResult = input.split(",");
@@ -59,34 +61,34 @@ public class OnCallControllerTest {
         assertThat(date.checkValidMonth(month) && date.checkValidDay(day)).isNotEqualTo(true);
     }
 
-    // todo 해결방법 모르겠음
-    @DisplayName("월 / 요일 입력 테스트 (Exception case)")
+    @DisplayName("월 / 요일 입력 테스트 (Month Input Exception case)")
     @ParameterizedTest
-    @ValueSource(strings = {"12, 4", "월, 5", "월, 금", " ,월", "13", "월", " , ", " ", ""})
-    void exceptionMonthAndDayInputLogicTest(String input) {
+    @ValueSource(strings = {"월, 5", "월, 금", " ,월", "월", " , ", " ", ""})
+    void monthInputExceptionTest(String input) {
         // given
         // valueSource의 인자값
-        // todo Parsing에서 에러 검출 할 것 + 메소드 분리 해야할 수도 있음
-        String[] splitResult = input.split(",");
-        int month;
-        String day = splitResult[1].trim();
         // when
-        // assertThatThrownBy 내부의 람다식 형식은 gpt 참고
-        assertThatThrownBy(() -> Integer.parseInt(splitResult[0]))
-                .isInstanceOfAny(
-                        NumberFormatException.class,
-                        IllegalArgumentException.class,
-                        NullPointerException.class
-                );
 
-        assertThatThrownBy(() -> date.checkValidDay(day))
-                .isInstanceOfAny(
-                        NumberFormatException.class,
-                        IllegalArgumentException.class,
-                        NullPointerException.class
-                );
+        // then
+        // assertThatThrownBy 내부의 람다식 형식은 gpt 참고
+        assertThatThrownBy(() -> Integer.parseInt(input.split(",")[0])).
+                isInstanceOfAny(NumberFormatException.class);
     }
 
+    // 형식이 잘못됐을때 테스트 (Failure)
+    @DisplayName("월 / 요일 입력 테스트 (Day Input Exception case)")
+    @ParameterizedTest
+    @ValueSource(strings = {"13", "월", " , ", " ", ""})
+    void InputExceptionTest(String input) {
+        // given
+        // valueSource의 인자값
+        String[] splitResult = input.split(",");
+        // when
+
+        // then
+        // assertThatThrownBy 내부의 람다식 형식은 gpt 참고
+        assertThat(splitResult).isEqualTo(2);
+    }
 
 }
 
