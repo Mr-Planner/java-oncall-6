@@ -7,7 +7,6 @@ import oncall.enums.model.worker.WorkType;
 import oncall.model.Worker;
 import oncall.enums.model.worker.WorkerCount;
 import oncall.view.InputView;
-import oncall.view.OutputView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,6 +18,7 @@ import static camp.nextstep.edu.missionutils.Console.readLine;
 public class OnCallController {
     // 필드
     private final Date date = new Date();
+    private final InputView inputView = new InputView();
     private final List<Worker> workers = new ArrayList<>();
 
     // 프로그램 실행 흐름
@@ -31,20 +31,15 @@ public class OnCallController {
     */
 
     // 월, 요일 입력 및 유효성 검사
-    // todo 메소드 분리 방법을 모르겠음
+    // InputView에서 입력받고 Parsing 검사 진행
     // todo 자료형을 잘못 입력받는 것에 대한 예외처리 -> 해야 함
     public void monthAndDayInputLogic() {
-        String input;
-        int month;
-        String day;
 
         do {
             InputView.printMonthAndDayInput();
+            inputView.inputMonthAndDay();
 
-            input = readLine();
-            month = Integer.parseInt(input.split(",")[0]);
-            day = input.split(",")[1].trim();
-        } while (! (date.checkValidMonth(month) && date.checkValidDay(day)));
+        } while (! (inputView.checkMonthAndDayInput(inputView.getInput()) && date.checkValidMonth(inputView.getMonth()) && date.checkValidDay(inputView.getDay())));
 
     }
 
