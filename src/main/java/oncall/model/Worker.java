@@ -24,7 +24,7 @@ public class Worker {
     }
 
     // 평/휴일 근무 이력 검증 메소드
-    public Boolean checkWorkDayValid() {
+    public Boolean checkWorkDaysValid() {
         // Type을 Worker의 field로 두었으나 클래스 명으로 접근하도록 변경.
         return (workDayFlag[WorkType.WEEKDAY.getType()] && workDayFlag[WorkType.HOLIDAY.getType()]);
     }
