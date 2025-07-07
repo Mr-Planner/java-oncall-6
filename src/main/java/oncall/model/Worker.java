@@ -4,7 +4,8 @@ import oncall.enums.model.worker.WorkType;
 
 public class Worker {
     private final String name;
-    private final Boolean[] workDayFlag = new Boolean[2];
+    // todo [checkpoint] invalidWorkDayFlagTest에서 saveHolidayWorkers에서 테스트시에 checkWorkDaysValid에서 NPE발생, boolean으로 변경함
+    private final boolean[] workDayFlag = new boolean[2];
 
     public Worker(String name) {
         this.name = name;
