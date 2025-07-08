@@ -6,6 +6,7 @@ import static camp.nextstep.edu.missionutils.Console.readLine;
 
 public class InputView {
     String input;
+    // todo Date 객체가 필드로, 추후에 month랑 day는 getter로 가져오기
     int month;
     String day;
 
@@ -65,6 +66,7 @@ public class InputView {
     public boolean checkMonthAndDayInput(String input) {
         // 일단 input이 2개인지 개수 체크
         // month의 type 체크
+        // todo split결과 자체를 변수로 저장
         if (! checkMonthAndDayInputLength(input)) {
             OutputView.printInputError();
             return false;

@@ -25,6 +25,7 @@ public class Date {
         this.day = day;
     }
 
+    // todo static으로 만들자, date객체는 월, 요일 입력받고나서 쓰이기때문에...
     // 유효성 검사 (month의 range)
     public boolean checkValidMonth(int month) {
 

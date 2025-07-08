@@ -162,12 +162,13 @@ public class OnCallController {
         for (Worker worker : workers) {
             if (! worker.checkWorkDaysValid()) {
                 throw new IllegalArgumentException(ErrorCode.INVALID_INPUT.getErrorMessage());
+                // todo logical error이므로 boolean 타입으로 바꾸고, error메시지만 반환
             }
         }
 
     }
 
-    // 근무자 연속 배치 여부 메소드 (todo 평일 or 휴일 근무자 재배치 필요)
+    // 근무자 연속 배치 여부 메소드
     private Boolean checkContinuousWorker(String[] names) {
 
         return true;

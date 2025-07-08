@@ -98,9 +98,9 @@ public class OnCallControllerTest {
                 .doesNotThrowAnyException();
     }
 
-    // 실패 테스트 케이스 (이름 길이 / 최소 or 최대 인원 / 중복 인원) 체크
+    // 실패 테스트 케이스 (이름 길이 / (최소 or 최대) 인원 / 중복 인원) 체크
     // 1. 5자 이상 이름, 2. 5명 이하, 3. 35명 이상, 4. 중복 이름
-    @DisplayName("근무자 입력 테스트 실패 (이름길이 초과 or 최소 / 최대 인원 미충족 or 중복인원 존재)")
+    @DisplayName("근무자 입력 테스트 실패 (이름길이 초과 or (최소 / 최대) 인원 미충족 or 중복인원 존재)")
     @ParameterizedTest
     @CsvSource(
             delimiter = '|',
@@ -112,6 +112,7 @@ public class OnCallControllerTest {
                     "영희, 영희, 민수, 철원, 대영, 성민 | 민수, 철원, 영희, 성민, 영희, 대영"
             }
     )
+    // todo 이름 길이관련 vs 중복 인원 나누기
     void invalidWorkersInputLogicTest(String weekdayWorkersInput, String holidayWorkersInput) {
         String[] weekdayWorkers = inputView.parseWorkersInput(weekdayWorkersInput);
         String[] holidayWorkers = inputView.parseWorkersInput(holidayWorkersInput);
@@ -157,15 +158,3 @@ public class OnCallControllerTest {
                 .isInstanceOf(IllegalArgumentException.class);
     }
 }
-
-//assertThatThrownBy(() -> onCallController.workersInputCheck(weekdayWorkers))
-//        .isInstanceOf(IllegalArgumentException.class);
-//
-//assertThatThrownBy(() -> onCallController.workersInputCheck(holidayWorkers))
-//        .isInstanceOf(IllegalArgumentException.class);
-//
-//assertThatThrownBy(() -> onCallController.saveHolidayWorkers(holidayWorkers, WorkType.HOLIDAY.getType()))
-//        .isInstanceOf(NoSuchElementException.class);
-//
-//assertThatThrownBy(() -> onCallController.checkWorkDayFlag())
-//        .isInstanceOf(IllegalArgumentException.class);
