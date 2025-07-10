@@ -15,10 +15,10 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class OnCallControllerTest {
     private OnCallController onCallController;
-    private Date date;
     private List<Worker> workers;
     private InputView inputView;
 
@@ -27,7 +27,6 @@ public class OnCallControllerTest {
     void setUpController() {
         // refresh controller
         onCallController = new OnCallController();
-        date = new Date();
         workers = new ArrayList<>();
         inputView = new InputView();
     }
@@ -42,7 +41,7 @@ public class OnCallControllerTest {
     void validMonthAndDayInputLogicTest(String input) {
 
         assertThat(inputView.checkMonthAndDayInput(input)).isEqualTo(true);
-        assertThat(date.checkValidMonth(inputView.getMonth()) && date.checkValidDay(inputView.getDay())).isEqualTo(true);
+        assertThat(Date.checkValidMonth(inputView.date.getMonth()) && Date.checkValidDay(inputView.date.getDay())).isEqualTo(true);
     }
 
     // 올바른 형식 but  유효하지 않은 값
@@ -54,7 +53,7 @@ public class OnCallControllerTest {
         // 1차 : split개수가 정확히 2개인지
         // 2차 : 월 / 요일 중 하나라도 false인 결과가 있는지
         assertThat(inputView.checkMonthAndDayInput(input)).isEqualTo(true);
-        assertThat(date.checkValidMonth(inputView.getMonth()) && date.checkValidDay(inputView.getDay())).isNotEqualTo(true);
+        assertThat(Date.checkValidMonth(inputView.date.getMonth()) && Date.checkValidDay(inputView.date.getDay())).isNotEqualTo(true);
     }
 
     @DisplayName("월 / 요일 입력 테스트 (False input)")
@@ -69,7 +68,6 @@ public class OnCallControllerTest {
     ----------------------------------- 근무자 입력 테스트 -----------------------------------
     */
 
-    // todo 현재 테스트 코드에서 컨트롤러의 필드를 직접 접근하고 수정하고 있음
     @DisplayName("근무자 입력 테스트 (valid input case)")
     @Test
     void validWorkersInputLogicTest() {
@@ -94,8 +92,8 @@ public class OnCallControllerTest {
         assertThatCode(() -> onCallController.saveHolidayWorkers(holidayWorkers, WorkType.HOLIDAY.getType()))
                 .doesNotThrowAnyException();
 
-        assertThatCode(() -> onCallController.checkWorkDayFlag())
-                .doesNotThrowAnyException();
+        assertThat(onCallController.checkWorkDayFlag()).isEqualTo(true);
+
     }
 
     // 실패 테스트 케이스 (이름 길이 / (최소 or 최대) 인원 / 중복 인원) 체크
@@ -154,7 +152,6 @@ public class OnCallControllerTest {
                         IllegalArgumentException.class);
 
         // 평일, 휴일 근무자 이름이 달라서 문제
-        assertThatThrownBy(() -> onCallController.checkWorkDayFlag())
-                .isInstanceOf(IllegalArgumentException.class);
+        assertThat(onCallController.checkWorkDayFlag()).isEqualTo(false);
     }
 }

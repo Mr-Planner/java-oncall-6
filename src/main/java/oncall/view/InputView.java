@@ -1,37 +1,21 @@
 package oncall.view;
 
+import oncall.model.Date;
+
 import java.util.Arrays;
 
 import static camp.nextstep.edu.missionutils.Console.readLine;
 
 public class InputView {
     String input;
-    // todo Date 객체가 필드로, 추후에 month랑 day는 getter로 가져오기
-    int month;
-    String day;
+    public Date date;
 
     /*
     ----------------------------------- getter / setter -----------------------------------
      */
 
-    public int getMonth() {
-        return month;
-    }
-
-    public String getDay() {
-        return day;
-    }
-
     public String getInput() {
         return input;
-    }
-
-    public void setMonth(int month) {
-        this.month = month;
-    }
-
-    public void setDay(String day) {
-        this.day = day;
     }
 
     /*
@@ -64,9 +48,10 @@ public class InputView {
 
     // 월 / 요일 입력 파싱체크
     public boolean checkMonthAndDayInput(String input) {
-        // 일단 input이 2개인지 개수 체크
-        // month의 type 체크
-        // todo split결과 자체를 변수로 저장
+        String[] results = input.split(",");
+        int month;
+        String day;
+
         if (! checkMonthAndDayInputLength(input)) {
             OutputView.printInputError();
             return false;
@@ -74,30 +59,24 @@ public class InputView {
 
         // month 검사, 예외 발생 시 return false
         try {
-            setMonth(Integer.parseInt(input.split(",")[0]));
-            checkMonthIsInteger(month);
+            month = Integer.parseInt(results[0]);
+            //checkMonthIsInteger(month);
         } catch (NumberFormatException e) {
             OutputView.printInputError();
             return false;
         }
 
-        setDay(input.split(",")[1].trim());
+        day = results[1].trim();
+        date = new Date(month, day);
 
         return true;
     }
-
 
     public boolean checkMonthAndDayInputLength(String input) {
 
         return input.split(",").length == 2;
     }
 
-    // month가 Int인지 판별
-    public void checkMonthIsInteger(Object month) {
-        if (! (month instanceof Integer)) {
-            throw new NumberFormatException();
-        }
-    }
 
     // 근무자 입력 파싱 메소드
     public String[] parseWorkersInput(String input) {

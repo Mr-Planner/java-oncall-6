@@ -7,6 +7,7 @@ import oncall.enums.model.worker.WorkType;
 import oncall.model.Worker;
 import oncall.enums.model.worker.WorkerCount;
 import oncall.view.InputView;
+import oncall.view.OutputView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,7 +16,6 @@ import java.util.NoSuchElementException;
 
 public class OnCallController {
     // 필드
-    private final Date date = new Date();
     private final InputView inputView = new InputView();
     private final List<Worker> workers = new ArrayList<>();
 
@@ -37,7 +37,7 @@ public class OnCallController {
             InputView.printMonthAndDayInput();
             inputView.input();
 
-        } while (! (inputView.checkMonthAndDayInput(inputView.getInput()) && date.checkValidMonth(inputView.getMonth()) && date.checkValidDay(inputView.getDay())));
+        } while (! (inputView.checkMonthAndDayInput(inputView.getInput()) && Date.checkValidMonth(inputView.date.getMonth()) && Date.checkValidDay(inputView.date.getDay())));
 
     }
 
@@ -69,9 +69,10 @@ public class OnCallController {
                 workersInputCheck(names);
                 saveHolidayWorkers(names, WorkType.HOLIDAY.getType());
 
-                // 평일, 주말 모두 입력됐는지 체크
-                checkWorkDayFlag();
-                break;
+                // 평일, 주말 모두 입력됐는지 체크 (마지막 단계)
+                if (checkWorkDayFlag()) {
+                    break;
+                }
             } catch (IllegalArgumentException | NoSuchElementException e) {
                 System.out.println(e.getMessage());
             }
@@ -158,14 +159,14 @@ public class OnCallController {
 
     // 근무자 workDayFlag 체크 메소드
     // todo Test코드에서 사용해야 하므로 public으로 바꿈
-    public void checkWorkDayFlag() {
+    public boolean checkWorkDayFlag() {
         for (Worker worker : workers) {
             if (! worker.checkWorkDaysValid()) {
-                throw new IllegalArgumentException(ErrorCode.INVALID_INPUT.getErrorMessage());
-                // todo logical error이므로 boolean 타입으로 바꾸고, error메시지만 반환
+                OutputView.printInputError();
+                return false;
             }
         }
-
+        return true;
     }
 
     // 근무자 연속 배치 여부 메소드

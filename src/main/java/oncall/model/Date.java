@@ -19,15 +19,22 @@ public class Date {
     public Date() {
     }
 
-    public Date(int month, int date, String day) {
+    public Date(int month, String day) {
         this.month = month;
-        this.date = date;
         this.day = day;
     }
 
-    // todo static으로 만들자, date객체는 월, 요일 입력받고나서 쓰이기때문에...
+    public String getDay() {
+        return day;
+    }
+
+    public int getMonth() {
+        return month;
+    }
+
+    // static 메소드로 언제바꿔야 하는지 파악
     // 유효성 검사 (month의 range)
-    public boolean checkValidMonth(int month) {
+    public static boolean checkValidMonth(int month) {
 
         if(month >= Month.JAN.getMonth() && month <= Month.DEC.getMonth()) {
             return true;
@@ -38,7 +45,7 @@ public class Date {
         return false;
     }
 
-    public boolean checkValidDay(String day) {
+    public static boolean checkValidDay(String day) {
         int dayCnt = Day.values().length;
 
         for (int cnt = 0; cnt < dayCnt; cnt++) {
