@@ -2,6 +2,7 @@ package oncall.controller;
 
 import oncall.enums.model.worker.WorkType;
 import oncall.model.Date;
+import oncall.model.MonthAndDay;
 import oncall.model.Worker;
 import oncall.view.InputView;
 import org.junit.jupiter.api.*;
@@ -21,6 +22,7 @@ public class OnCallControllerTest {
     private OnCallController onCallController;
     private List<Worker> workers;
     private InputView inputView;
+    private MonthAndDay monthAndDay;
 
     // 테스트 시작 전
     @BeforeEach
@@ -40,8 +42,10 @@ public class OnCallControllerTest {
     @ValueSource(strings = {"5,월", "4, 토"})
     void validMonthAndDayInputLogicTest(String input) {
 
+        monthAndDay = inputView.getMonthAndDay(input);
+
         assertThat(inputView.checkMonthAndDayInput(input)).isEqualTo(true);
-        assertThat(Date.checkValidMonth(inputView.date.getMonth()) && Date.checkValidDay(inputView.date.getDay())).isEqualTo(true);
+        assertThat(Date.checkValidMonth(monthAndDay.getMonth()) && Date.checkValidDay(monthAndDay.getDay())).isEqualTo(true);
     }
 
     // 올바른 형식 but  유효하지 않은 값
@@ -50,10 +54,12 @@ public class OnCallControllerTest {
     @ValueSource(strings = {"13, 월", "4, 몫", "-1, 월", "12, 월화", "12, 월 화", "12, 5"})
     void invalidMonthAndDayInputLogicTest(String input) {
 
+        monthAndDay = inputView.getMonthAndDay(input);
+
         // 1차 : split개수가 정확히 2개인지
         // 2차 : 월 / 요일 중 하나라도 false인 결과가 있는지
         assertThat(inputView.checkMonthAndDayInput(input)).isEqualTo(true);
-        assertThat(Date.checkValidMonth(inputView.date.getMonth()) && Date.checkValidDay(inputView.date.getDay())).isNotEqualTo(true);
+        assertThat(Date.checkValidMonth(monthAndDay.getMonth()) && Date.checkValidDay(monthAndDay.getDay())).isNotEqualTo(true);
     }
 
     @DisplayName("월 / 요일 입력 테스트 (False input)")

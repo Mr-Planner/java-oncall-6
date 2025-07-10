@@ -4,6 +4,7 @@ package oncall.controller;
 import oncall.enums.exception.ErrorCode;
 import oncall.model.Date;
 import oncall.enums.model.worker.WorkType;
+import oncall.model.MonthAndDay;
 import oncall.model.Worker;
 import oncall.enums.model.worker.WorkerCount;
 import oncall.view.InputView;
@@ -17,6 +18,7 @@ import java.util.NoSuchElementException;
 public class OnCallController {
     // 필드
     private final InputView inputView = new InputView();
+    private Date date;
     private final List<Worker> workers = new ArrayList<>();
 
     // 프로그램 실행 흐름
@@ -33,11 +35,27 @@ public class OnCallController {
     // InputView에서 입력받고 Parsing 검사 진행
     public void monthAndDayInputLogic() {
 
-        do {
+        while (true) {
             InputView.printMonthAndDayInput();
             inputView.input();
 
-        } while (! (inputView.checkMonthAndDayInput(inputView.getInput()) && Date.checkValidMonth(inputView.date.getMonth()) && Date.checkValidDay(inputView.date.getDay())));
+            if (! inputView.checkMonthAndDayInput(inputView.getInput())) {
+                continue;
+            }
+
+            MonthAndDay monthAndDay = inputView.getMonthAndDay(inputView.getInput());
+
+            if (! Date.checkValidMonth(monthAndDay.getMonth())) {
+                continue;
+            }
+
+            if (! Date.checkValidDay(monthAndDay.getDay())) {
+                continue;
+            }
+
+            date = new Date(monthAndDay.getMonth(), monthAndDay.getDay());
+            break;
+        }
 
     }
 

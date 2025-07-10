@@ -11,9 +11,7 @@ todo Date 클래스의 활용에 대하여...
 ... 앞으로 마저 더 생각
 * */
 public class Date {
-    private String input;
     private int month;
-    private int date;
     private String day;
 
     public Date() {

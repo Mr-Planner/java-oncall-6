@@ -1,6 +1,7 @@
 package oncall.view;
 
 import oncall.model.Date;
+import oncall.model.MonthAndDay;
 
 import java.util.Arrays;
 
@@ -8,7 +9,6 @@ import static camp.nextstep.edu.missionutils.Console.readLine;
 
 public class InputView {
     String input;
-    public Date date;
 
     /*
     ----------------------------------- getter / setter -----------------------------------
@@ -16,6 +16,14 @@ public class InputView {
 
     public String getInput() {
         return input;
+    }
+
+    public MonthAndDay getMonthAndDay(String input) {
+        String[] results = input.split(",");
+        int month = Integer.parseInt(results[0]);
+        String day = results[1].trim();
+
+        return new MonthAndDay(month, day);
     }
 
     /*
@@ -49,8 +57,6 @@ public class InputView {
     // 월 / 요일 입력 파싱체크
     public boolean checkMonthAndDayInput(String input) {
         String[] results = input.split(",");
-        int month;
-        String day;
 
         if (! checkMonthAndDayInputLength(input)) {
             OutputView.printInputError();
@@ -59,15 +65,12 @@ public class InputView {
 
         // month 검사, 예외 발생 시 return false
         try {
-            month = Integer.parseInt(results[0]);
-            //checkMonthIsInteger(month);
+            Integer.parseInt(results[0]);
+
         } catch (NumberFormatException e) {
             OutputView.printInputError();
             return false;
         }
-
-        day = results[1].trim();
-        date = new Date(month, day);
 
         return true;
     }
