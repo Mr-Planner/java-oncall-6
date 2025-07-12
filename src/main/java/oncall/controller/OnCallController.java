@@ -24,7 +24,8 @@ public class OnCallController {
     private final List<Worker> workers = new ArrayList<>();
     private final List<String> weekdayWorkersOrder = new ArrayList<>();
     private final List<String> holidayWorkersOrder = new ArrayList<>();
-
+    private final List<String> totalWorkersOrder = new ArrayList<>();
+    private final int[] reassignFlag = new int[2];
 
     // 프로그램 실행 흐름
     public void run() {
@@ -208,33 +209,82 @@ public class OnCallController {
     */
     // 배치 메소드 (평일 / 휴일 포함)
     public void assignWorkers(int month, String day) {
-        // cnt만큼 loop
-        for (int date = 1; date <= Month.getDaysInMonth(month); date++) {
 
-            // 공휴일 (주말제외)
-            // todo 휴일 근무자 순서를 따로 저장하지 못함
-            if (Month.getHolidays(month).contains(date)) {
-                assignHolidayWorkers();
+        for (int date = 1, order = 0; date <= Month.getDaysInMonth(month); date++, order++) {
+            // 주말 및 공휴일
+            int currentOrder = order % workers.size();
+
+            if (day.equals(Day.SAT.getDay()) || day.equals(Day.SUN.getDay())
+                    || Month.getHolidays(month).contains(date))
+            {
+                assignHolidayWorkers(currentOrder);
+                day = Day.getNextDay(day);
                 continue;
             }
 
-            // 주말
-            if (day.equals(Day.SAT.getDay()) || day.equals(Day.SUN.getDay() )) {
-                assignHolidayWorkers();
-                continue;
-            }
-            assignWeekdayWorkers();
+            assignWeekdayWorkers(currentOrder);
+            day = Day.getNextDay(day); // 다음날 설정
         }
     }
 
     // 평일 근무자 배치 메소드
-    public void assignWeekdayWorkers() {
+    public void assignWeekdayWorkers(int currentOrder) {
 
+        String todayWorker = weekdayWorkersOrder.get(currentOrder);
+
+        // todo if문 2개가 동시에 만족되는 경우는 잘 모르겠음.. (없다고 가정함)
+        // -> 재배치된 이후 다음
+        if (reassignFlag[WorkType.WEEKDAY.getType()] == 1) {
+            int previousOrder = (currentOrder - 1) % workers.size();
+            todayWorker = weekdayWorkersOrder.get(previousOrder);
+        }
+
+        if (checkContinuousWorker(todayWorker)) {
+            // 평일 재배치
+            todayWorker =reassignWeekdayWorkers(currentOrder);
+        }
+
+        reassignFlag[WorkType.WEEKDAY.getType()] = 0;
+        totalWorkersOrder.add(todayWorker);
     }
 
     // 휴일 근무자 배치 메소드
-    public void assignHolidayWorkers() {
+    public void assignHolidayWorkers(int currentOrder) {
 
+        String todayWorker = holidayWorkersOrder.get(currentOrder);
+
+        if (reassignFlag[WorkType.WEEKDAY.getType()] == 1) {
+            int previousOrder = (currentOrder - 1) % workers.size();
+            todayWorker = holidayWorkersOrder.get(previousOrder);
+        }
+
+        if (checkContinuousWorker(todayWorker)) {
+            // 휴일 재배치
+            todayWorker = reassignHolidayWorkers(currentOrder);
+        }
+
+        reassignFlag[WorkType.HOLIDAY.getType()] = 0;
+        totalWorkersOrder.add(todayWorker);
+    }
+
+    private boolean checkContinuousWorker(String todayWorker ) {
+        
+        int lastIndex = totalWorkersOrder.size() - 1;
+        return todayWorker.equals(totalWorkersOrder.get(lastIndex));
+    }
+
+    public String reassignWeekdayWorkers(int currentOrder) {
+
+        reassignFlag[WorkType.WEEKDAY.getType()] = 1;
+        int nextOrder = (currentOrder + 1) % workers.size();
+        return weekdayWorkersOrder.get(nextOrder);
+    }
+
+    public String reassignHolidayWorkers(int currentOrder) {
+
+        reassignFlag[WorkType.HOLIDAY.getType()] = 1;
+        int nextOrder = (currentOrder + 1) % workers.size();
+        return holidayWorkersOrder.get(nextOrder);
     }
 
 }
