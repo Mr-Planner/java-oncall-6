@@ -22,6 +22,9 @@ public class OnCallController {
     private final InputView inputView = new InputView();
     private Date date;
     private final List<Worker> workers = new ArrayList<>();
+    private final List<String> weekdayWorkersOrder = new ArrayList<>();
+    private final List<String> holidayWorkersOrder = new ArrayList<>();
+
 
     // 프로그램 실행 흐름
     public void run() {
@@ -119,6 +122,7 @@ public class OnCallController {
         for (String name : names) {
             workers.add(new Worker(name));
             workers.get(index++).setWorkDayFlag(workType);
+            weekdayWorkersOrder.add(name);
         }
     }
 
@@ -130,9 +134,9 @@ public class OnCallController {
             Worker worker = workers.stream()
                     .filter(one -> one.getName().equals(name))
                     .findFirst().orElseThrow(NoSuchElementException::new);
-
             // 휴일 근무 타입 설정
             worker.setWorkDayFlag(workType);
+            holidayWorkersOrder.add(name);
         }
     }
 
