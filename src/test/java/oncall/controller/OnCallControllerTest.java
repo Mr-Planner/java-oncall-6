@@ -13,6 +13,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.NoSuchElementException;
 
 import static org.assertj.core.api.Assertions.*;
@@ -104,7 +105,7 @@ public class OnCallControllerTest {
 
     // 실패 테스트 케이스 (이름 길이 / (최소 or 최대) 인원 / 중복 인원) 체크
     // 1. 5자 이상 이름, 2. 5명 이하, 3. 35명 이상, 4. 중복 이름
-    @DisplayName("근무자 입력 테스트 실패 (이름길이 초과 or (최소 / 최대) 인원 미충족 or 중복인원 존재)")
+    @DisplayName("근무자 입력 테스트 실패 (이름길이 초과 or (최소 / 최대) 인원 미충족)")
     @ParameterizedTest
     @CsvSource(
             delimiter = '|',
@@ -112,12 +113,29 @@ public class OnCallControllerTest {
                     "가나다라마, 민수, 철원, 영희, 대영 | 대영, 민수, 가나다라마, 영희, 철원",
                     "영희, 민수, 철원 | 민수, 철원, 영희",
                     "나윤,하늘,보람,재희,지후,선미,태윤,지안,서율,민재,세린,유진,다온,하랑,민서,도윤,예진,하민,서아,가온,소율,은우,예림,지아,채원,수빈,시윤,하진,다현,윤서,주아,지운,유림,다빈,서진,아린 " +
-                            "| 서아,지운,보람,하진,가온,윤서,태윤,지아,다온,유림,지후,서율,하민,예림,민서,도윤,지안,다빈,하랑,세린,예진,재희,나윤,민재,유진,아린,다현,은우,서진,하늘,수빈,소율,채원,하진,선미,지안",
-                    "영희, 영희, 민수, 철원, 대영, 성민 | 민수, 철원, 영희, 성민, 영희, 대영"
+                            "| 서아,지운,보람,하진,가온,윤서,태윤,지아,다온,유림,지후,서율,하민,예림,민서,도윤,지안,다빈,하랑,세린,예진,재희,나윤,민재,유진,아린,다현,은우,서진,하늘,수빈,소율,채원,하진,선미,지안"
             }
     )
-    // todo 이름 길이관련 vs 중복 인원 나누기
     void invalidWorkersInputLogicTest(String weekdayWorkersInput, String holidayWorkersInput) {
+        String[] weekdayWorkers = inputView.parseWorkersInput(weekdayWorkersInput);
+        String[] holidayWorkers = inputView.parseWorkersInput(holidayWorkersInput);
+
+        assertThatThrownBy(() -> onCallController.workersInputCheck(weekdayWorkers))
+                .isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> onCallController.workersInputCheck(holidayWorkers))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("근무자 입력 테스트 실패 (중복인원 존재)")
+    @ParameterizedTest
+    @CsvSource(
+            delimiter = '|',
+            value = {
+                    "영희, 영희, 민수, 철원, 대영, 성민 | 민수, 철원, 영희, 성민, 영희, 대영",
+                    "준팍,도밥,고니,수아,루루,글로,철수, 수아 | 수아,루루,글로,고니,철수,도밥,준팍,수아"
+            }
+    )
+    void duplicatedWorkersInputLogicTest(String weekdayWorkersInput, String holidayWorkersInput) {
         String[] weekdayWorkers = inputView.parseWorkersInput(weekdayWorkersInput);
         String[] holidayWorkers = inputView.parseWorkersInput(holidayWorkersInput);
 

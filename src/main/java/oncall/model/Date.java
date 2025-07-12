@@ -10,12 +10,10 @@ todo Date 클래스의 활용에 대하여...
 2. 각 월의 날 수와 휴일을 관리하고 저장
 ... 앞으로 마저 더 생각
 * */
+
 public class Date {
     private int month;
     private String day;
-
-    public Date() {
-    }
 
     public Date(int month, String day) {
         this.month = month;

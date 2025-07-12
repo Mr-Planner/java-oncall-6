@@ -2,6 +2,8 @@ package oncall.controller;
 
 
 import oncall.enums.exception.ErrorCode;
+import oncall.enums.model.date.Day;
+import oncall.enums.model.date.Month;
 import oncall.model.Date;
 import oncall.enums.model.worker.WorkType;
 import oncall.model.MonthAndDay;
@@ -26,6 +28,10 @@ public class OnCallController {
         // 입력
         monthAndDayInputLogic(); // 월 / 요일 입력
         workersInputLogic(); // 평 / 휴일 근무자들 입력
+        // 배치 메소드 (내부에서 재배치 메소드)
+        assignWorkers(date.getMonth(), date.getDay());
+        // 출력 메소드
+
     }
     /*
     ----------------------------------- 입력 메소드 -----------------------------------
@@ -59,7 +65,6 @@ public class OnCallController {
 
     }
 
-    // 여기서 do while로 하고 weekday input 및 저장 (1차), holiday input 및 저장
     // while문에는 flag검사로 최종
     public void workersInputLogic() {
 
@@ -195,11 +200,38 @@ public class OnCallController {
 
 
     /*
-    ----------------------------------- 근무자 재배치 메소드 -----------------------------------
+    ----------------------------------- 근무자 배치 메소드 -----------------------------------
     */
-    // 평일 근무자 재배치 메소드
+    // 배치 메소드 (평일 / 휴일 포함)
+    public void assignWorkers(int month, String day) {
+        // cnt만큼 loop
+        for (int date = 1; date <= Month.getDaysInMonth(month); date++) {
 
-    // 휴일 근무자 재배치 메소드
+            // 공휴일 (주말제외)
+            // todo 휴일 근무자 순서를 따로 저장하지 못함
+            if (Month.getHolidays(month).contains(date)) {
+                assignHolidayWorkers();
+                continue;
+            }
+
+            // 주말
+            if (day.equals(Day.SAT.getDay()) || day.equals(Day.SUN.getDay() )) {
+                assignHolidayWorkers();
+                continue;
+            }
+            assignWeekdayWorkers();
+        }
+    }
+
+    // 평일 근무자 배치 메소드
+    public void assignWeekdayWorkers() {
+
+    }
+
+    // 휴일 근무자 배치 메소드
+    public void assignHolidayWorkers() {
+
+    }
 
 }
 
