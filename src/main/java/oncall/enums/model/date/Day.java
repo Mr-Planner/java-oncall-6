@@ -29,5 +29,4 @@ public enum Day {
         return Day.values()[nextIndex].getDay();
     }
 
-
 }

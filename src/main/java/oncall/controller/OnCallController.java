@@ -35,6 +35,7 @@ public class OnCallController {
         // 배치 메소드 (내부에서 재배치 메소드)
         assignWorkers(date.getMonth(), date.getDay());
         // 출력 메소드
+        OutputView.printMonthlyTable(totalWorkersOrder, date.getMonth(), date.getDay());
 
     }
     /*
@@ -209,21 +210,25 @@ public class OnCallController {
     */
     // 배치 메소드 (평일 / 휴일 포함)
     public void assignWorkers(int month, String day) {
+        int weekdayOrder = 0;
+        int holidayOrder = 0;
 
-        for (int date = 1, order = 0; date <= Month.getDaysInMonth(month); date++, order++) {
-            // 주말 및 공휴일
-            int currentOrder = order % workers.size();
-
+        // 월간 근무자 배치 (재배치 포함)
+        for (int date = 1; date <= Month.getDaysInMonth(month); date++) {
+            // 휴일 (주말 / 공휴일)
             if (day.equals(Day.SAT.getDay()) || day.equals(Day.SUN.getDay())
                     || Month.getHolidays(month).contains(date))
             {
-                assignHolidayWorkers(currentOrder);
+                assignHolidayWorkers(holidayOrder);
                 day = Day.getNextDay(day);
+                holidayOrder = (holidayOrder + 1) % workers.size();
+
                 continue;
             }
 
-            assignWeekdayWorkers(currentOrder);
+            assignWeekdayWorkers(weekdayOrder);
             day = Day.getNextDay(day); // 다음날 설정
+            weekdayOrder = (weekdayOrder + 1) % workers.size();
         }
     }
 
@@ -232,11 +237,12 @@ public class OnCallController {
 
         String todayWorker = weekdayWorkersOrder.get(currentOrder);
 
-        // todo if문 2개가 동시에 만족되는 경우는 잘 모르겠음.. (없다고 가정함)
-        // -> 재배치된 이후 다음
+        // cf) 휴일이 연속으로 있고 평일과 격일로 있으면 재배치가 연속으로 이루어 질 수도
+        // 직전에 재배치 -> 배치된 근무자 바로 이전의 근무자 추출
         if (reassignFlag[WorkType.WEEKDAY.getType()] == 1) {
             int previousOrder = (currentOrder - 1) % workers.size();
             todayWorker = weekdayWorkersOrder.get(previousOrder);
+            reassignFlag[WorkType.WEEKDAY.getType()] = 0;
         }
 
         if (checkContinuousWorker(todayWorker)) {
@@ -244,7 +250,6 @@ public class OnCallController {
             todayWorker =reassignWeekdayWorkers(currentOrder);
         }
 
-        reassignFlag[WorkType.WEEKDAY.getType()] = 0;
         totalWorkersOrder.add(todayWorker);
     }
 
@@ -253,9 +258,10 @@ public class OnCallController {
 
         String todayWorker = holidayWorkersOrder.get(currentOrder);
 
-        if (reassignFlag[WorkType.WEEKDAY.getType()] == 1) {
+        if (reassignFlag[WorkType.HOLIDAY.getType()] == 1) {
             int previousOrder = (currentOrder - 1) % workers.size();
             todayWorker = holidayWorkersOrder.get(previousOrder);
+            reassignFlag[WorkType.HOLIDAY.getType()] = 0;
         }
 
         if (checkContinuousWorker(todayWorker)) {
@@ -263,13 +269,17 @@ public class OnCallController {
             todayWorker = reassignHolidayWorkers(currentOrder);
         }
 
-        reassignFlag[WorkType.HOLIDAY.getType()] = 0;
         totalWorkersOrder.add(todayWorker);
     }
 
-    private boolean checkContinuousWorker(String todayWorker ) {
-        
+    private boolean checkContinuousWorker(String todayWorker) {
+
         int lastIndex = totalWorkersOrder.size() - 1;
+
+        if (lastIndex < 0) {
+            return false;
+        }
+
         return todayWorker.equals(totalWorkersOrder.get(lastIndex));
     }
 
