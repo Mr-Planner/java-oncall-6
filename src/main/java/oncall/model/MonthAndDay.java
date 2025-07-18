@@ -1,5 +1,6 @@
 package oncall.model;
 
+// todo MonthAndDay 대신 Date로 대체해보기
 public class MonthAndDay {
     private int month;
     private String day;

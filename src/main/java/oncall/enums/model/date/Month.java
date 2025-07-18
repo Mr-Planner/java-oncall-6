@@ -35,7 +35,7 @@ public enum Month {
 
     public static int getDaysInMonth(int month) {
 
-        // todo stream문법 잘 모르겠어서 일단 for each
+        // todo 반복문이 아니라 인덱스로 한번에 접근하는 방법 알아보기
         for (Month m : Month.values()) {
             if(m.getMonth() == month) {
                 return m.daysInMonth;

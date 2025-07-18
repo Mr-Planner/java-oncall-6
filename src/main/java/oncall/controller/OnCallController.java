@@ -21,6 +21,7 @@ public class OnCallController {
     // 필드
     private final InputView inputView = new InputView();
     private Date date;
+    // todo 너무많은 Orders 관련 필드
     private final List<Worker> workers = new ArrayList<>();
     private final List<String> weekdayWorkersOrder = new ArrayList<>();
     private final List<String> holidayWorkersOrder = new ArrayList<>();
@@ -87,6 +88,7 @@ public class OnCallController {
             }
 
             // 평일 근무자 저장 (Worker 생성)
+            // todo
             saveWeekdayWorkers(names, WorkType.WEEKDAY.getType());
 
             // 휴일 근무자 입력 및 체크
@@ -198,13 +200,6 @@ public class OnCallController {
         return true;
     }
 
-    // 근무자 연속 배치 여부 메소드
-    private Boolean checkContinuousWorker(String[] names) {
-
-        return true;
-    }
-
-
     /*
     ----------------------------------- 근무자 배치 메소드 -----------------------------------
     */
@@ -216,6 +211,7 @@ public class OnCallController {
         // 월간 근무자 배치 (재배치 포함)
         for (int date = 1; date <= Month.getDaysInMonth(month); date++) {
             // 휴일 (주말 / 공휴일)
+            // todo if문 내부 메소드로 분리할 것
             if (day.equals(Day.SAT.getDay()) || day.equals(Day.SUN.getDay())
                     || Month.getHolidays(month).contains(date))
             {
