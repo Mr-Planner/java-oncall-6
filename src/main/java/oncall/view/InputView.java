@@ -1,7 +1,6 @@
 package oncall.view;
 
 import oncall.model.Date;
-import oncall.model.MonthAndDay;
 
 import java.util.Arrays;
 
@@ -18,12 +17,12 @@ public class InputView {
         return input;
     }
 
-    public MonthAndDay getMonthAndDay(String input) {
+    public Date getMonthAndDay(String input) {
         String[] results = input.split(",");
         int month = Integer.parseInt(results[0]);
         String day = results[1].trim();
 
-        return new MonthAndDay(month, day);
+        return new Date(month, day);
     }
 
     /*

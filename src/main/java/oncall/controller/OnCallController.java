@@ -5,7 +5,6 @@ import oncall.enums.model.date.Day;
 import oncall.enums.model.date.Month;
 import oncall.model.Date;
 import oncall.enums.model.worker.WorkType;
-import oncall.model.MonthAndDay;
 import oncall.model.Worker;
 import oncall.model.WorkerRoster;
 import oncall.view.InputView;
@@ -51,17 +50,16 @@ public class OnCallController {
                 continue;
             }
 
-            MonthAndDay monthAndDay = inputView.getMonthAndDay(inputView.getInput());
+            date = inputView.getMonthAndDay(inputView.getInput());
 
-            if (! Date.checkValidMonth(monthAndDay.getMonth())) {
+            if (! Date.checkValidMonth(date.getMonth())) {
                 continue;
             }
 
-            if (! Date.checkValidDay(monthAndDay.getDay())) {
+            if (! Date.checkValidDay(date.getDay())) {
                 continue;
             }
 
-            date = new Date(monthAndDay.getMonth(), monthAndDay.getDay());
             break;
         }
 
