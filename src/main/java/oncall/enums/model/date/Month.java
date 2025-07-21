@@ -1,8 +1,6 @@
 package oncall.enums.model.date;
 
-import java.util.Arrays;
 import java.util.List;
-
 
 // 월 / 날짜수 / 휴일
 public enum Month {

@@ -3,8 +3,8 @@ package oncall.controller;
 
 import oncall.enums.model.date.Day;
 import oncall.enums.model.date.Month;
-import oncall.model.Date;
 import oncall.enums.model.worker.WorkType;
+import oncall.model.Date;
 import oncall.model.Worker;
 import oncall.model.WorkerRoster;
 import oncall.view.InputView;
@@ -12,7 +12,6 @@ import oncall.view.OutputView;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 public class OnCallController {
     // 필드
@@ -95,7 +94,7 @@ public class OnCallController {
             try {
                 Worker.workersInputCheck(holidayWorkersName);
 
-            } catch (IllegalArgumentException | NoSuchElementException e) { // todo 예외 종류 체크
+            } catch (IllegalArgumentException e) {
                 System.out.println(e.getMessage());
             }
 

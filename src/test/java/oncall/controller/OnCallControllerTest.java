@@ -1,34 +1,27 @@
 package oncall.controller;
 
-import oncall.enums.model.worker.WorkType;
 import oncall.model.Date;
 import oncall.model.Worker;
 import oncall.model.WorkerRoster;
 import oncall.view.InputView;
-import oncall.view.OutputView;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import java.util.ArrayList;
-import java.util.NoSuchElementException;
+
 
 import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class OnCallControllerTest {
-    private OnCallController onCallController;
-    private WorkerRoster workerRoster;
     private InputView inputView;
-    private OutputView outputView;
     private Date date;
 
     // 테스트 시작 전
     @BeforeEach
     void setUpController() {
         // refresh controller
-        onCallController = new OnCallController();
         inputView = new InputView();
     }
 
