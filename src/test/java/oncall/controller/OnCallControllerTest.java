@@ -2,18 +2,16 @@ package oncall.controller;
 
 import oncall.enums.model.worker.WorkType;
 import oncall.model.Date;
-import oncall.model.MonthAndDay;
 import oncall.model.Worker;
+import oncall.model.WorkerRoster;
 import oncall.view.InputView;
+import oncall.view.OutputView;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
 import java.util.NoSuchElementException;
 
 import static org.assertj.core.api.Assertions.*;
@@ -21,8 +19,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class OnCallControllerTest {
     private OnCallController onCallController;
-    private List<Worker> workers;
+    private WorkerRoster workerRoster;
     private InputView inputView;
+    private OutputView outputView;
     private Date date;
 
     // 테스트 시작 전
@@ -30,7 +29,6 @@ public class OnCallControllerTest {
     void setUpController() {
         // refresh controller
         onCallController = new OnCallController();
-        workers = new ArrayList<>();
         inputView = new InputView();
     }
 
@@ -86,21 +84,15 @@ public class OnCallControllerTest {
         String[] weekdayWorkers = inputView.parseWorkersInput(weekdayWorkersInput);
         String[] holidayWorkers = inputView.parseWorkersInput(holidayWorkersInput);
 
-        onCallController.saveWeekdayWorkers(weekdayWorkers, WorkType.WEEKDAY.getType());
-        onCallController.saveHolidayWorkers(holidayWorkers, WorkType.HOLIDAY.getType());
-
         // then
-        assertThatCode(() -> onCallController.workersInputCheck(weekdayWorkers))
+        assertThatCode(() -> Worker.workersInputCheck(weekdayWorkers))
                 .doesNotThrowAnyException();
 
-        assertThatCode(() -> onCallController.workersInputCheck(holidayWorkers))
+        assertThatCode(() -> Worker.workersInputCheck(holidayWorkers))
                 .doesNotThrowAnyException();
 
-        assertThatCode(() -> onCallController.saveHolidayWorkers(holidayWorkers, WorkType.HOLIDAY.getType()))
-                .doesNotThrowAnyException();
-
-        assertThat(onCallController.checkWorkDayFlag()).isEqualTo(true);
-
+        assertThat(WorkerRoster.checkAllTypeWorkerExists(weekdayWorkers, holidayWorkers))
+                .isEqualTo(true);
     }
 
     // 실패 테스트 케이스 (이름 길이 / (최소 or 최대) 인원 / 중복 인원) 체크
@@ -120,9 +112,9 @@ public class OnCallControllerTest {
         String[] weekdayWorkers = inputView.parseWorkersInput(weekdayWorkersInput);
         String[] holidayWorkers = inputView.parseWorkersInput(holidayWorkersInput);
 
-        assertThatThrownBy(() -> onCallController.workersInputCheck(weekdayWorkers))
+        assertThatThrownBy(() -> Worker.workersInputCheck(weekdayWorkers))
                 .isInstanceOf(IllegalArgumentException.class);
-        assertThatThrownBy(() -> onCallController.workersInputCheck(holidayWorkers))
+        assertThatThrownBy(() -> Worker.workersInputCheck(holidayWorkers))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -139,9 +131,9 @@ public class OnCallControllerTest {
         String[] weekdayWorkers = inputView.parseWorkersInput(weekdayWorkersInput);
         String[] holidayWorkers = inputView.parseWorkersInput(holidayWorkersInput);
 
-        assertThatThrownBy(() -> onCallController.workersInputCheck(weekdayWorkers))
+        assertThatThrownBy(() -> Worker.workersInputCheck(weekdayWorkers))
                 .isInstanceOf(IllegalArgumentException.class);
-        assertThatThrownBy(() -> onCallController.workersInputCheck(holidayWorkers))
+        assertThatThrownBy(() -> Worker.workersInputCheck(holidayWorkers))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -160,22 +152,14 @@ public class OnCallControllerTest {
         String[] holidayWorkers = inputView.parseWorkersInput(holidayWorkersInput);
 
         // 입력 형식에는 문제가 없어야 함
-        assertThatCode(() -> onCallController.workersInputCheck(weekdayWorkers))
+        assertThatCode(() -> Worker.workersInputCheck(weekdayWorkers))
                 .doesNotThrowAnyException();
 
-        assertThatCode(() -> onCallController.workersInputCheck(holidayWorkers))
+        assertThatCode(() -> Worker.workersInputCheck(holidayWorkers))
                 .doesNotThrowAnyException();
 
-        // 근무자 저장 -> checkWorkDayFlag Test하기 위해
-        onCallController.saveWeekdayWorkers(weekdayWorkers, WorkType.WEEKDAY.getType());
-
-        // 휴일 근무자는 저장불가 (이름이 다르므로)
-        assertThatThrownBy(() -> onCallController.saveHolidayWorkers(holidayWorkers, WorkType.HOLIDAY.getType()))
-                .isInstanceOfAny(
-                        NoSuchElementException.class,
-                        IllegalArgumentException.class);
-
-        // 평일, 휴일 근무자 이름이 달라서 문제
-        assertThat(onCallController.checkWorkDayFlag()).isEqualTo(false);
+        // weekday <-> holiday 비교가 같으면 안됨
+        assertThat(WorkerRoster.checkAllTypeWorkerExists(weekdayWorkers, holidayWorkers))
+                .isNotEqualTo(true);
     }
 }
