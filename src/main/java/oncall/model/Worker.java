@@ -1,7 +1,6 @@
 package oncall.model;
 
 import oncall.enums.exception.ErrorCode;
-import oncall.enums.model.worker.WorkType;
 import oncall.enums.model.worker.WorkerCount;
 
 import java.util.Arrays;
@@ -23,6 +22,7 @@ public class Worker {
     */
 
     // 평일/휴일 공통 입력 유효성 체크 (이름의 길이 제한, 최소/최대 인원, 중복 인원)
+    // todo if문의 각 case별로 customException 만들어보기
     public static void workersInputCheck(String[] names) {
 
         if (! checkDuplicatedName(names)) {
@@ -41,7 +41,6 @@ public class Worker {
         }
     }
 
-    // todo 클래스 기준으로 나누어서 접근제한자 수정 (private으로), validate 용도의 함수는 private로 한다
     // todo 추후 3개 함수 한번에 람다로 리팩토링
     // 이름 길이 제한
     private static Boolean checkWorkerNameLength(String name) {

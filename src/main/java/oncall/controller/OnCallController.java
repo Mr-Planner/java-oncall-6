@@ -20,6 +20,7 @@ public class OnCallController {
 
     private WorkerRoster workerRoster;
     private final List<String> totalWorkersOrder = new ArrayList<>();
+    // todo boolean으로 바꾸기 boolean <-> Boolean
     private final int[] reassignFlag = new int[2];
 
     // 프로그램 실행 흐름
@@ -163,6 +164,7 @@ public class OnCallController {
     }
 
     // 평일 근무자 배치 메소드
+    // todo 람다
     public void assignWeekdayWorkers(int currentOrder) {
 
         String todayWorker = workerRoster.getWeekdayWorker(currentOrder);
