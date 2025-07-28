@@ -20,7 +20,7 @@ public class OnCallController {
 
     private WorkerRoster workerRoster;
     private final List<String> totalWorkersOrder = new ArrayList<>();
-    // todo boolean으로 바꾸기 boolean <-> Boolean
+    // todo boolean으로 바꾸기
     private final int[] reassignFlag = new int[2];
 
     // 프로그램 실행 흐름
